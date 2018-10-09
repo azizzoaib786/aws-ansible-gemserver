@@ -1,0 +1,3 @@
+[all]
+p-fso-gem-app01.fidor.intern ansible_user=deploy
+p-fso-gem-app02.fidor.intern ansible_user=deploy

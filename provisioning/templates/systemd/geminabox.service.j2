@@ -1,0 +1,21 @@
+[Unit]
+Description=Geminabox Rubygems Server
+Documentation=https://github.fidor.de/solutions/ansible-gemserver
+
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+
+ExecStart=/home/{{ ansible_user }}/.rvm/bin/rvm 2.5.1@gemserver do bundle exec puma -C config/puma.rb
+ExecStop=/home/{{ ansible_user }}/.rvm/bin/rvm 2.5.1@gemserver do bundle exec pumactl -S /mnt/web/tmp/puma.state stop
+ExecReload=/home/{{ ansible_user }}/.rvm/bin/rvm 2.5.1@gemserver do bundle exec pumactl -S /mnt/web/tmp/puma.state restart
+
+WorkingDirectory=/mnt/web
+PIDFile=/mnt/web/tmp/puma.pid
+
+User={{ ansible_user }}
+Group={{ ansible_user }}
+
+Environment=RACK_ENV=production PORT=8080

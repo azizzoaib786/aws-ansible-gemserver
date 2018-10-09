@@ -1,0 +1,39 @@
+- name: Create folders
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: '{{ ansible_user }}'
+    group: '{{ ansible_user }}'
+  with_items:
+    - /mnt/data
+    - /mnt/web
+
+- name: Copy application code
+  copy:
+    src: geminabox/
+    dest: /mnt/web
+    owner: '{{ ansible_user }}'
+    group: '{{ ansible_user }}'
+
+- name: Install dependencies with bundler
+  shell: /bin/bash -l -c 'bundle install --deployment --without development test'
+  args:
+    chdir: /mnt/web
+  become_user: '{{ ansible_user }}'
+
+- name: Setup systemd unit
+  template:
+    src: systemd/geminabox.service.j2
+    dest: /usr/lib/systemd/system/geminabox.service
+  register: geminabox_service
+
+- name: Reload systemd
+  systemd:
+    daemon_reload: true
+  when: geminabox_service.changed
+
+- name: Enable systemd service
+  systemd:
+    name: geminabox
+    enabled: true
+    state: started

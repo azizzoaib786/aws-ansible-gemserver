@@ -1,0 +1,10 @@
+- name: Gemserver
+  hosts: all
+  roles:
+    - role: rvm.ruby
+      rvm1_user: '{{ ansible_user }}'
+      rvm1_rubies:
+        - 2.5.1
+      rvm1_bundler_install: true
+      rvm1_gpg_key_server: 'hkp://keys.gnupg.net:80'
+    - role: geminabox
